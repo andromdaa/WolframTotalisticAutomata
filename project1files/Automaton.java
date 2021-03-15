@@ -1,21 +1,55 @@
 import java.io.*;
 import java.util.ArrayList;
 
-public abstract class Automaton {
+/**
+ * Represents a full elementary cellular automaton which can be evolved, represented as a string,
+ * and past/future generations can be inspected.
+ *
+ * @author Cole Hoffman
+ * @version 0.1
+ */
+
+
+public class Automaton {
     private Rule rule;
-    private ArrayList<Generation> generations;
+    private final ArrayList<Generation> generations;
     char falseSymbol;
     char trueSymbol;
 
-    protected Automaton(int ruleNum, Generation initial) throws RuleNumException {
-        this.rule = createRule(ruleNum);
+
+    public static void main(String[] args) {
+        Automaton eca = new Automaton(2, new Generation(("100001000010"), '1'));
+
+        eca.evolve(50);
+        eca.trueSymbol = '$';
+        eca.falseSymbol = ';';
+
+        eca.saveEvolution("rule2.txt");
+    }
+
+
+    /**
+     * Initializes the Automaton.
+     *
+     * @param ruleNum The rule number to initialize the Rule object.
+     * @param initial The initial generation.
+     */
+    //initializes automaton
+    public Automaton(int ruleNum, Generation initial) {
+        rule = new Rule(ruleNum);
         generations = new ArrayList<>();
         generations.add(initial);
         trueSymbol = '1';
         falseSymbol = '0';
     }
 
-    protected Automaton(String fileName) {
+    /**
+     * Initializes an Automaton from a file.
+     *
+     * @param fileName The file from which the Automaton is initialized.
+     */
+    //initializes automaton from fileName
+    public Automaton(String fileName) {
         //create empty string which will be used to pass the cell states
         String initialCellStates = "";
         try {
@@ -23,8 +57,7 @@ public abstract class Automaton {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
 
             //initialize rule global variable with the next line
-            //FIXME
-            //rule = new Rule(Integer.parseInt(reader.readLine()));
+            rule = new Rule(Integer.parseInt(reader.readLine()));
             //get the line value for the true/false symbols
             String valueSymbols = reader.readLine();
             //split the valueSymbols string, strip it of any spaces, and then get its character value
@@ -42,10 +75,15 @@ public abstract class Automaton {
         //add the initial generation
         generations = new ArrayList<>();
         generations.add(initialGeneration);
+
     }
 
-    protected abstract Rule createRule(int ruleNum) throws RuleNumException;
-
+    /**
+     * Returns the rule number.
+     *
+     * @return Returns the rule number.
+     */
+    //returns the ruleNum
     public int getRuleNum() {
         return rule.getRuleNum();
     }
@@ -139,7 +177,6 @@ public abstract class Automaton {
      * @param filename The filename that the file is saved as.
      */
 
-
     //save the evolution to a file
     public void saveEvolution(String filename) {
         try {
@@ -150,11 +187,6 @@ public abstract class Automaton {
         } catch (IOException ignored) {
 
         }
-
-    }
-
-    public String getRuleTable() {
-        return rule.getRuleTable(falseSymbol, trueSymbol);
     }
 
 
