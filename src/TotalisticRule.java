@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class TotalisticRule extends Rule {
@@ -42,9 +43,7 @@ public class TotalisticRule extends Rule {
         for (boolean b : neighborhood) {
             if (b) trueAmount += 1;
         }
-
-        return neighborhood[trueAmount];
-
+        return (ruleStates[5 - trueAmount]);
     }
 
     @Override
@@ -53,49 +52,57 @@ public class TotalisticRule extends Rule {
         boolean[] genStates = gen.getStates();
         int length = gen.size();
 
+        if(gen.size() == 1) {
+            Arrays.fill(neighborHood, genStates[0]);
+        } else {
+            setLeft(idx, genStates, neighborHood, length);
+            neighborHood[2] = genStates[idx];
+            setRight(idx, genStates, neighborHood, length);
+        }
+
+        return neighborHood;
+    }
+
+    private void setLeft(int idx, boolean[] genStates, boolean[] neighborHood, int length) {
         try {
             neighborHood[0] = genStates[idx - 2];
             neighborHood[1] = genStates[idx - 1];
-            neighborHood[2] = genStates[idx];
-            neighborHood[3] = genStates[idx + 1];
-            neighborHood[4] = genStates[idx + 2];
-            return neighborHood;
         } catch (IndexOutOfBoundsException e) {
-            if (idx + 1 > 5) {
-                neighborHood[3] = genStates[0];
-                neighborHood[4] = genStates[1];
-            } else if (idx + 2 > 5) {
-                neighborHood[4] = genStates[0];
-            } else if (idx - 1 < 0) {
+            if(idx - 1 < 0) {
                 neighborHood[0] = genStates[length - 2];
                 neighborHood[1] = genStates[length - 1];
-                neighborHood[2] = genStates[idx];
-                neighborHood[3] = genStates[idx + 1];
-                neighborHood[4] = genStates[idx + 2];
+            } else {
+                neighborHood[0] = genStates[length - 1];
+                neighborHood[1] = genStates[idx - 1];
             }
-
-            return neighborHood;
         }
     }
 
-
-    private int getIndex(int idx, Generation gen) {
-        if(idx - 1 < 0) {
-
-        } else if(idx + 1 > gen.size()) {
-
+    private void setRight(int idx, boolean[] genStates, boolean[] neighborHood, int length) {
+        try {
+            neighborHood[3] = genStates[idx + 1];
+            neighborHood[4] = genStates[idx + 2];
+        } catch (IndexOutOfBoundsException e) {
+            if(idx + 1 > length - 1) {
+                neighborHood[3] = genStates[0];
+                neighborHood[4] = genStates[1];
+            } else {
+                neighborHood[3] = genStates[length - 1];
+                neighborHood[4] = genStates[0];
+            }
         }
-
-
-
-
-
-
-        return -1;
     }
 
     @Override
     public String getRuleTable(char falseSymbol, char trueSymbol) {
-        return "";
+        char[] TFVals = new char[6];
+
+        for (int i = 0; i < ruleStates.length; i++) {
+            if(ruleStates[i]) TFVals[i] = trueSymbol;
+            else TFVals[i] = falseSymbol;
+        }
+
+        return String.format("5 4 3 2 1 0" + System.lineSeparator() +
+                "%c %c %c %c %c %c", TFVals[0], TFVals[1], TFVals[2], TFVals[3], TFVals[4], TFVals[5]);
     }
 }

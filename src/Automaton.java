@@ -23,8 +23,7 @@ public abstract class Automaton {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
 
             //initialize rule global variable with the next line
-            //FIXME
-            //rule = new Rule(Integer.parseInt(reader.readLine()));
+            rule = createRule(Integer.parseInt(reader.readLine().trim()));
             //get the line value for the true/false symbols
             String valueSymbols = reader.readLine();
             //split the valueSymbols string, strip it of any spaces, and then get its character value
@@ -33,7 +32,7 @@ public abstract class Automaton {
             trueSymbol = splitStrings[1].trim().charAt(0);
             //get the cellStates from the next line
             initialCellStates = reader.readLine();
-        } catch (IOException ignored) {
+        } catch (IOException | RuleNumException ignored) {
         }
 
         //initialize new generation

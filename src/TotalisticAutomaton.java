@@ -16,6 +16,6 @@ public class TotalisticAutomaton extends Automaton {
 
     @Override
     public int getRuleNum() {
-        return 0;
+        return super.getRuleNum();
     }
 }
